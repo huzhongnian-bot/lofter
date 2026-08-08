@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手铐 · 凯·默瑟 & 裘德</title>
+    <style>
+        :root {
+            --paper: #fbf7ef;
+            --paper-deep: #f4eee1;
+            --ink: #4a4238;
+            --ink-light: #8a8071;
+            --line: #e6ddcc;
+            --sky: #7fb2d9;
+            --sky-soft: #eaf3fa;
+            --peach: #f2a08d;
+            --peach-soft: #fdf0ec;
+            --accent: #5b8fb5;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { font-size: 16px; }
+        body {
+            font-family: "Source Han Serif SC", "Noto Serif SC", "Songti SC", "SimSun", serif;
+            background:
+                radial-gradient(circle at 15% 10%, rgba(127,178,217,0.08), transparent 40%),
+                radial-gradient(circle at 85% 90%, rgba(242,160,141,0.08), transparent 40%),
+                var(--paper);
+            color: var(--ink);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* ---------- 侧边栏：课程表笔记本风 ---------- */
+        .sidebar {
+            width: 240px;
+            background: var(--paper-deep);
+            border-right: 2px dashed var(--line);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+        .sidebar .brand {
+            padding: 26px 22px 18px;
+            border-bottom: 1px solid var(--line);
+        }
+        .brand .title {
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+        .brand .subtitle {
+            margin-top: 6px;
+            font-size: 12px;
+            color: var(--ink-light);
+            letter-spacing: 1px;
+        }
+        .brand .names {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+        .names .tag {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        .names .tag.kai { background: var(--sky-soft); color: var(--accent); border: 1px solid #cce0ef; }
+        .names .tag.jude { background: var(--peach-soft); color: #d3705a; border: 1px solid #f6d5cb; }
+        .names .amp { color: var(--ink-light); font-size: 12px; }
+
+        .file-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px 14px 24px;
+        }
+        .file-item {
+            position: relative;
+            padding: 11px 14px 11px 34px;
+            margin-bottom: 4px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14.5px;
+            color: var(--ink);
+            transition: background 0.15s;
+            line-height: 1.4;
+        }
+        .file-item::before {
+            content: "";
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            border: 1.5px solid var(--sky);
+            background: transparent;
+        }
+        .file-item:hover { background: rgba(127,178,217,0.12); }
+        .file-item.active {
+            background: #fff;
+            box-shadow: 0 1px 4px rgba(74,66,56,0.1);
+            font-weight: 700;
+        }
+        .file-item.active::before { background: var(--peach); border-color: var(--peach); }
+
+        /* ---------- 主区域 ---------- */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        .header {
+            padding: 18px 32px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            border-bottom: 1px solid var(--line);
+            background: rgba(251,247,239,0.9);
+        }
+        .header h1 {
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            flex-shrink: 0;
+        }
+        .progress {
+            font-size: 12.5px;
+            color: var(--ink-light);
+            letter-spacing: 1px;
+        }
+        .spacer { flex: 1; }
+        .toolbar { display: flex; gap: 8px; align-items: center; }
+        .toolbar button {
+            font-family: inherit;
+            background: #fff;
+            border: 1px solid var(--line);
+            color: var(--ink);
+            padding: 6px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.15s;
+        }
+        .toolbar button:hover:not(:disabled) {
+            border-color: var(--sky);
+            color: var(--accent);
+        }
+        .toolbar button:disabled { opacity: 0.35; cursor: not-allowed; }
+        .toolbar .font-btn { padding: 6px 12px; }
+        .toolbar select {
+            font-family: inherit;
+            background: #fff;
+            border: 1px solid var(--line);
+            color: var(--ink);
+            padding: 6px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.15s;
+        }
+        .toolbar select:hover { border-color: var(--sky); color: var(--accent); }
+
+        /* ---------- 阅读区：书页 ---------- */
+        .chat {
+            flex: 1;
+            overflow-y: auto;
+            padding: 36px 24px 80px;
+            scroll-behavior: smooth;
+        }
+        .page {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        .chapter-head {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .chapter-head .num {
+            font-size: 13px;
+            letter-spacing: 4px;
+            color: var(--ink-light);
+        }
+        .chapter-head .deco {
+            margin: 12px auto 0;
+            width: 46px;
+            border-bottom: 2px solid var(--peach);
+        }
+
+        .message {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 34px;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .message.assistant .avatar { background: var(--sky-soft); color: var(--accent); border: 1.5px solid #cce0ef; }
+        .message.user .avatar { background: var(--peach-soft); color: #d3705a; border: 1.5px solid #f6d5cb; }
+
+        .body { flex: 1; min-width: 0; }
+        .speaker {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+        .message.assistant .speaker { color: var(--accent); }
+        .message.user .speaker { color: #d3705a; }
+
+        .paragraphs { font-size: 1rem; }
+        .paragraphs p { margin-bottom: 10px; }
+        .paragraphs p:last-child { margin-bottom: 0; }
+
+        /* 台词 */
+        p.say {
+            line-height: 1.9;
+            color: var(--ink);
+        }
+        .message.assistant p.say {
+            background: #fff;
+            border-left: 3px solid var(--sky);
+            padding: 10px 16px;
+            border-radius: 0 10px 10px 0;
+            box-shadow: 0 1px 3px rgba(74,66,56,0.06);
+        }
+        .message.user p.say {
+            background: #fff;
+            border-left: 3px solid var(--peach);
+            padding: 10px 16px;
+            border-radius: 0 10px 10px 0;
+            box-shadow: 0 1px 3px rgba(74,66,56,0.06);
+        }
+        /* 动作 / 旁白 */
+        p.act {
+            font-size: 0.92em;
+            line-height: 1.85;
+            color: var(--ink-light);
+            padding: 2px 4px;
+        }
+        /* 台词中夹带的行内动作描写 */
+        span.act-inline {
+            color: var(--ink-light);
+            font-size: 0.92em;
+        }
+
+        .end-mark {
+            text-align: center;
+            margin: 48px 0 10px;
+            color: var(--ink-light);
+            font-size: 13px;
+            letter-spacing: 3px;
+        }
+        .end-mark::before, .end-mark::after {
+            content: "·";
+            margin: 0 12px;
+            color: var(--peach);
+        }
+
+        .loading-more {
+            text-align: center;
+            padding: 18px 0 30px;
+            color: var(--ink-light);
+            font-size: 13px;
+            letter-spacing: 2px;
+        }
+
+        .empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 60vh;
+            color: var(--ink-light);
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        /* 滚动条 */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #d8cdb6; }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .chat { padding: 24px 14px 60px; }
+            .header { padding: 14px 16px; flex-wrap: wrap; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="brand">
+            <div class="title">手铐</div>
+            <div class="subtitle">— 校园青春 · 对话集 —</div>
+            <div class="names">
+                <span class="tag kai">凯·默瑟</span>
+                <span class="amp">&amp;</span>
+                <span class="tag jude">裘德</span>
+            </div>
+        </div>
+        <div class="file-list" id="fileList"></div>
+    </div>
+    <div class="main">
+        <div class="header">
+            <h1 id="chapterTitle">请选择一个章节</h1>
+            <div class="progress" id="progress"></div>
+            <div class="spacer"></div>
+            <div class="toolbar">
+                <button class="font-btn" onclick="adjustFont(-1)" title="缩小字号">A-</button>
+                <button class="font-btn" onclick="adjustFont(1)" title="放大字号">A+</button>
+                <select id="exportFmt" title="选择导出格式">
+                    <option value="md">MD</option>
+                    <option value="txt">TXT</option>
+                </select>
+                <button onclick="exportChapter()" title="导出当前章节（格式可选 Markdown / TXT）">导出本章</button>
+                <button id="exportAllBtn" onclick="exportAll()" title="导出全部章节（格式可选 Markdown / TXT）">导出全文</button>
+                <button id="prevBtn" onclick="loadPrev()">← 上一章</button>
+                <button id="nextBtn" onclick="loadNext()">下一章 →</button>
+            </div>
+        </div>
+        <div class="chat" id="chat">
+            <div class="empty">在左侧选择章节，开始阅读这段故事 ✎</div>
+        </div>
+    </div>
+
+    <script>
+        let files = [];
+        let currentIndex = -1;   // 当前视口所在章节
+        let loadedUpTo = -1;     // 已追加到的最后一章
+        let loadingNext = false;
+        let fontSize = 16;
+
+        const fileListEl = document.getElementById('fileList');
+        const chatEl = document.getElementById('chat');
+        const titleEl = document.getElementById('chapterTitle');
+        const progressEl = document.getElementById('progress');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function speakerClass(speaker) {
+            if (speaker === '裘德') return 'user';
+            if (speaker === '凯·默瑟') return 'assistant';
+            return speaker === 'user' ? 'user' : 'assistant';
+        }
+
+        function avatarChar(speaker) {
+            return speaker === '裘德' ? '裘' : '凯';
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+        }
+
+        // 将消息拆成段落：整段 *...* 为动作旁白；台词中夹带的 *...* 渲染为行内旁白
+        function renderParagraphs(content) {
+            const paras = content.split(/\n{2,}/).map(p => p.trim()).filter(Boolean);
+            return paras.map(p => {
+                const isAct = /^\*[^*]*\*$/.test(p);
+                if (isAct) {
+                    const text = escapeHtml(p.replace(/^\*|\*$/g, '').trim()).replace(/\n/g, '<br>');
+                    return `<p class="act">${text}</p>`;
+                }
+                const text = escapeHtml(p)
+                    .replace(/\*([^*]+)\*/g, '<span class="act-inline">$1</span>')
+                    .replace(/\n/g, '<br>');
+                return `<p class="say">${text}</p>`;
+            }).join('');
+        }
+
+        function adjustFont(delta) {
+            fontSize = Math.min(22, Math.max(13, fontSize + delta));
+            document.documentElement.style.fontSize = fontSize + 'px';
+        }
+
+        async function loadFiles() {
+            const res = await fetch('/api/files');
+            files = await res.json();
+            fileListEl.innerHTML = files.map((f, i) =>
+                `<div class="file-item" data-index="${i}" onclick="loadFile(${i})">${f.title}</div>`
+            ).join('');
+            if (files.length > 0) loadFile(0);
+        }
+
+        function updateHeader(index) {
+            currentIndex = index;
+            const f = files[index];
+            titleEl.textContent = f.title;
+            progressEl.textContent = `${index + 1} / ${files.length}`;
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = index === files.length - 1;
+            document.querySelectorAll('.file-item').forEach(el => el.classList.remove('active'));
+            const active = document.querySelector(`.file-item[data-index="${index}"]`);
+            if (active) active.classList.add('active');
+        }
+
+        async function fetchChapter(index) {
+            const res = await fetch('/api/file/' + encodeURIComponent(files[index].name));
+            return res.json();
+        }
+
+        function chapterHtml(index, messages) {
+            const f = files[index];
+            const body = messages.map(m => `
+                <div class="message ${speakerClass(m.speaker)}">
+                    <div class="avatar">${avatarChar(m.speaker)}</div>
+                    <div class="body">
+                        <div class="speaker">${escapeHtml(m.speaker)}</div>
+                        <div class="paragraphs">${renderParagraphs(m.content)}</div>
+                    </div>
+                </div>
+            `).join('');
+            const endText = index === files.length - 1 ? '全文完' : '本章完';
+            return `
+                <div class="page chapter" data-index="${index}">
+                    <div class="chapter-head">
+                        <div class="num">${escapeHtml(f.title)}</div>
+                        <div class="deco"></div>
+                    </div>
+                    ${body}
+                    <div class="end-mark">${endText}</div>
+                </div>
+            `;
+        }
+
+        async function loadFile(index) {
+            if (index < 0 || index >= files.length) return;
+            updateHeader(index);
+            loadedUpTo = index;
+            chatEl.innerHTML = '<div class="empty">翻页中…</div>';
+            const data = await fetchChapter(index);
+
+            if (!data.messages || data.messages.length === 0) {
+                chatEl.innerHTML = '<div class="empty">该章节没有对话内容</div>';
+                return;
+            }
+
+            chatEl.innerHTML = chapterHtml(index, data.messages);
+            chatEl.scrollTop = 0;
+        }
+
+        // 滚动接近底部时，无缝追加下一章
+        async function appendNextChapter() {
+            if (loadingNext || loadedUpTo < 0 || loadedUpTo >= files.length - 1) return;
+            loadingNext = true;
+            const next = loadedUpTo + 1;
+            const loader = document.createElement('div');
+            loader.className = 'loading-more';
+            loader.textContent = `正在翻到${files[next].title}…`;
+            chatEl.appendChild(loader);
+            try {
+                const data = await fetchChapter(next);
+                loader.remove();
+                if (data.messages && data.messages.length > 0) {
+                    chatEl.insertAdjacentHTML('beforeend', chapterHtml(next, data.messages));
+                }
+                loadedUpTo = next;
+            } catch (e) {
+                loader.remove();
+            }
+            loadingNext = false;
+        }
+
+        // 根据滚动位置同步页眉的章节信息
+        function syncHeaderWithScroll() {
+            const chapters = chatEl.querySelectorAll('.chapter');
+            const topLine = chatEl.getBoundingClientRect().top + 80;
+            let visible = currentIndex;
+            for (const sec of chapters) {
+                if (sec.getBoundingClientRect().top <= topLine) {
+                    visible = parseInt(sec.dataset.index, 10);
+                }
+            }
+            if (visible !== currentIndex) updateHeader(visible);
+        }
+
+        chatEl.addEventListener('scroll', () => {
+            if (chatEl.scrollHeight - chatEl.scrollTop - chatEl.clientHeight < 800) {
+                appendNextChapter();
+            }
+            syncHeaderWithScroll();
+        });
+
+        // 目标章节已在页面中则平滑滚动过去，否则重新加载
+        function jumpTo(index) {
+            if (index < 0 || index >= files.length) return;
+            const sec = chatEl.querySelector(`.chapter[data-index="${index}"]`);
+            if (sec) {
+                sec.scrollIntoView({ behavior: 'smooth' });
+                return;
+            }
+            loadFile(index);
+        }
+
+        function loadPrev() { jumpTo(currentIndex - 1); }
+        function loadNext() { jumpTo(currentIndex + 1); }
+
+        // ---------- 导出 Markdown / TXT ----------
+        // 文件头带 UTF-8 BOM，兼容 Windows 记事本
+        function downloadText(filename, text, mime) {
+            const blob = new Blob(['\ufeff' + text], { type: `${mime};charset=utf-8` });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        const MD_HEADER = `# 手铐\n\n> 校园青春 · 凯·默瑟 & 裘德\n\n`;
+        const TXT_HEADER = `手铐\n校园青春 · 凯·默瑟 & 裘德\n\n`;
+        const TXT_DIVIDER = '\n\n──────\n\n';
+
+        // 正文中的 *动作描写* 本身就是 md 斜体语法，直接保留
+        function chapterToMarkdown(title, messages) {
+            const blocks = messages.map(m => `**${m.speaker}**\n\n${m.content}`);
+            return `## ${title}\n\n` + blocks.join('\n\n');
+        }
+
+        // txt 保留原作标题与角色对话结构，*动作*标记原样保留
+        function chapterToTxt(title, messages) {
+            const blocks = messages.map(m => `【${m.speaker}】\n${m.content}`);
+            return `${title}\n\n` + blocks.join('\n\n');
+        }
+
+        function exportFormat() {
+            const el = document.getElementById('exportFmt');
+            return el && el.value === 'txt'
+                ? { ext: 'txt', mime: 'text/plain', header: TXT_HEADER, divider: TXT_DIVIDER, render: chapterToTxt }
+                : { ext: 'md', mime: 'text/markdown', header: MD_HEADER, divider: '\n\n---\n\n', render: chapterToMarkdown };
+        }
+
+        async function exportChapter() {
+            if (currentIndex < 0) return;
+            const fmt = exportFormat();
+            const f = files[currentIndex];
+            const data = await fetchChapter(currentIndex);
+            if (!data.messages || data.messages.length === 0) return;
+            const text = fmt.header + fmt.render(f.title, data.messages) + '\n';
+            downloadText(`手铐 ${f.title}.${fmt.ext}`, text, fmt.mime);
+        }
+
+        async function exportAll() {
+            const btn = document.getElementById('exportAllBtn');
+            if (btn.disabled) return;
+            btn.disabled = true;
+            const original = btn.textContent;
+            try {
+                const fmt = exportFormat();
+                const parts = [];
+                for (let i = 0; i < files.length; i++) {
+                    btn.textContent = `导出中 ${i + 1}/${files.length}`;
+                    const data = await fetchChapter(i);
+                    if (data.messages && data.messages.length > 0) {
+                        parts.push(fmt.render(files[i].title, data.messages));
+                    }
+                }
+                const text = fmt.header + parts.join(fmt.divider) + '\n';
+                downloadText(`手铐 全文.${fmt.ext}`, text, fmt.mime);
+            } finally {
+                btn.textContent = original;
+                btn.disabled = false;
+            }
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowLeft') loadPrev();
+            if (e.key === 'ArrowRight') loadNext();
+        });
+
+        loadFiles();
+    </script>
+</body>
+</html>
