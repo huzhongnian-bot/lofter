@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>手铐 · 凯·默瑟 & 裘德</title>
+    <title>对话阅读</title>
     <style>
         :root {
             --paper: #fbf7ef;
@@ -16,6 +16,12 @@
             --peach: #f2a08d;
             --peach-soft: #fdf0ec;
             --accent: #5b8fb5;
+            --indigo: #5b6eb5;
+            --indigo-soft: #eceffb;
+            --plum: #9b5b8f;
+            --plum-soft: #f8ecf5;
+            --sage: #6b9b7a;
+            --sage-soft: #e8f5ec;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { font-size: 16px; }
@@ -61,6 +67,7 @@
             align-items: center;
             gap: 8px;
             font-size: 13px;
+            flex-wrap: wrap;
         }
         .names .tag {
             padding: 3px 10px;
@@ -210,6 +217,9 @@
         }
         .message.assistant .avatar { background: var(--sky-soft); color: var(--accent); border: 1.5px solid #cce0ef; }
         .message.user .avatar { background: var(--peach-soft); color: #d3705a; border: 1.5px solid #f6d5cb; }
+        .message.caes .avatar { background: var(--indigo-soft); color: var(--indigo); border: 1.5px solid #d0d6ef; }
+        .message.ling .avatar { background: var(--plum-soft); color: var(--plum); border: 1.5px solid #ebd3e6; }
+        .message.bai .avatar { background: var(--sage-soft); color: var(--sage); border: 1.5px solid #c8e6d2; }
 
         .body { flex: 1; min-width: 0; }
         .speaker {
@@ -220,6 +230,9 @@
         }
         .message.assistant .speaker { color: var(--accent); }
         .message.user .speaker { color: #d3705a; }
+        .message.caes .speaker { color: var(--indigo); }
+        .message.ling .speaker { color: var(--plum); }
+        .message.bai .speaker { color: var(--sage); }
 
         .paragraphs { font-size: 1rem; }
         .paragraphs p { margin-bottom: 10px; }
@@ -240,6 +253,27 @@
         .message.user p.say {
             background: #fff;
             border-left: 3px solid var(--peach);
+            padding: 10px 16px;
+            border-radius: 0 10px 10px 0;
+            box-shadow: 0 1px 3px rgba(74,66,56,0.06);
+        }
+        .message.caes p.say {
+            background: #fff;
+            border-left: 3px solid var(--indigo);
+            padding: 10px 16px;
+            border-radius: 0 10px 10px 0;
+            box-shadow: 0 1px 3px rgba(74,66,56,0.06);
+        }
+        .message.ling p.say {
+            background: #fff;
+            border-left: 3px solid var(--plum);
+            padding: 10px 16px;
+            border-radius: 0 10px 10px 0;
+            box-shadow: 0 1px 3px rgba(74,66,56,0.06);
+        }
+        .message.bai p.say {
+            background: #fff;
+            border-left: 3px solid var(--sage);
             padding: 10px 16px;
             border-radius: 0 10px 10px 0;
             box-shadow: 0 1px 3px rgba(74,66,56,0.06);
@@ -303,9 +337,9 @@
 <body>
     <div class="sidebar">
         <div class="brand">
-            <div class="title">手铐</div>
-            <div class="subtitle">— 校园青春 · 对话集 —</div>
-            <div class="names">
+            <div class="title" id="brandTitle">手铐</div>
+            <div class="subtitle" id="brandSubtitle">— 校园青春 · 对话集 —</div>
+            <div class="names" id="brandNames">
                 <span class="tag kai">凯·默瑟</span>
                 <span class="amp">&amp;</span>
                 <span class="tag jude">裘德</span>
@@ -319,6 +353,8 @@
             <div class="progress" id="progress"></div>
             <div class="spacer"></div>
             <div class="toolbar">
+                <select id="articleSelect" title="切换文章" onchange="switchArticle(this.value)"></select>
+                <button onclick="location.href='/editor.html?article='+encodeURIComponent(article)" title="打开改文工作台">✎ 改文</button>
                 <button class="font-btn" onclick="adjustFont(-1)" title="缩小字号">A-</button>
                 <button class="font-btn" onclick="adjustFont(1)" title="放大字号">A+</button>
                 <select id="exportFmt" title="选择导出格式">
@@ -337,6 +373,58 @@
     </div>
 
     <script>
+        const urlParams = new URLSearchParams(location.search);
+        const article = urlParams.get('article') || 'cuff';
+
+        // 文章配置：新增文章时在此扩展角色、标题、导出文件名等信息
+        const ARTICLE_INFO = {
+            cuff: {
+                title: '手铐',
+                subtitle: '— 校园青春 · 对话集 —',
+                names: [
+                    { name: '凯·默瑟', class: 'kai' },
+                    { name: '裘德', class: 'jude' }
+                ],
+                roleMap: { '裘德': 'user', '凯·默瑟': 'assistant' },
+                roleClassMap: { '凯·默瑟': 'assistant', '裘德': 'user' },
+                avatarMap: { '裘德': '裘', '凯·默瑟': '凯' },
+                mdHeader: `# 手铐\n\n> 校园青春 · 凯·默瑟 & 裘德\n\n`,
+                txtHeader: `手铐\n校园青春 · 凯·默瑟 & 裘德\n\n`
+            },
+            nte: {
+                title: 'Nowhere to Everywhere',
+                subtitle: '— 异象管理局 · 古董奇谈 —',
+                names: [
+                    { name: '卡厄斯', class: 'caes' },
+                    { name: '零', class: 'ling' },
+                    { name: '白藏', class: 'bai' }
+                ],
+                roleMap: { '零': 'user', '卡厄斯': 'assistant', '白藏': 'assistant' },
+                roleClassMap: { '卡厄斯': 'caes', '零': 'ling', '白藏': 'bai' },
+                avatarMap: { '卡厄斯': '卡', '零': '零', '白藏': '白' },
+                mdHeader: `# Nowhere to Everywhere\n\n> 异象管理局 · 卡厄斯 & 零\n\n`,
+                txtHeader: `Nowhere to Everywhere\n异象管理局 · 卡厄斯 & 零\n\n`
+            }
+        };
+
+        const info = ARTICLE_INFO[article] || {
+            title: article,
+            subtitle: '',
+            names: [],
+            roleMap: {},
+            roleClassMap: {},
+            avatarMap: {},
+            mdHeader: `# ${article}\n\n`,
+            txtHeader: `${article}\n\n`
+        };
+
+        document.title = `${info.title} · 对话阅读`;
+        document.getElementById('brandTitle').textContent = info.title;
+        document.getElementById('brandSubtitle').textContent = info.subtitle;
+        document.getElementById('brandNames').innerHTML = info.names.map((n, i) =>
+            `${i > 0 ? '<span class="amp">&amp;</span>' : ''}<span class="tag ${n.class}">${escapeHtml(n.name)}</span>`
+        ).join('');
+
         let files = [];
         let currentIndex = -1;   // 当前视口所在章节
         let loadedUpTo = -1;     // 已追加到的最后一章
@@ -351,13 +439,13 @@
         const nextBtn = document.getElementById('nextBtn');
 
         function speakerClass(speaker) {
-            if (speaker === '裘德') return 'user';
-            if (speaker === '凯·默瑟') return 'assistant';
+            if (info.roleMap[speaker]) return info.roleMap[speaker];
             return speaker === 'user' ? 'user' : 'assistant';
         }
 
         function avatarChar(speaker) {
-            return speaker === '裘德' ? '裘' : '凯';
+            if (info.avatarMap[speaker]) return info.avatarMap[speaker];
+            return speaker ? speaker.charAt(0) : '?';
         }
 
         function escapeHtml(text) {
@@ -385,8 +473,30 @@
             document.documentElement.style.fontSize = fontSize + 'px';
         }
 
+        async function loadArticles() {
+            try {
+                const res = await fetch('/api/articles');
+                const list = await res.json();
+                const select = document.getElementById('articleSelect');
+                select.innerHTML = list.map(a =>
+                    `<option value="${escapeHtml(a)}" ${a === article ? 'selected' : ''}>${escapeHtml(a)}</option>`
+                ).join('');
+            } catch (e) {
+                // 单文章场景可忽略
+            }
+        }
+
+        function switchArticle(next) {
+            if (next === article) return;
+            location.search = `?article=${encodeURIComponent(next)}`;
+        }
+
         async function loadFiles() {
-            const res = await fetch('/api/files');
+            const res = await fetch(`/api/${encodeURIComponent(article)}/files`);
+            if (!res.ok) {
+                chatEl.innerHTML = `<div class="empty">无法加载文章“${escapeHtml(article)}”</div>`;
+                return;
+            }
             files = await res.json();
             fileListEl.innerHTML = files.map((f, i) =>
                 `<div class="file-item" data-index="${i}" onclick="loadFile(${i})">${f.title}</div>`
@@ -407,21 +517,24 @@
         }
 
         async function fetchChapter(index) {
-            const res = await fetch('/api/file/' + encodeURIComponent(files[index].name));
+            const res = await fetch(`/api/${encodeURIComponent(article)}/file/` + encodeURIComponent(files[index].name));
             return res.json();
         }
 
         function chapterHtml(index, messages) {
             const f = files[index];
-            const body = messages.map(m => `
-                <div class="message ${speakerClass(m.speaker)}">
+            const body = messages.map(m => {
+                const roleClass = info.roleClassMap[m.speaker] || speakerClass(m.speaker);
+                return `
+                <div class="message ${roleClass}">
                     <div class="avatar">${avatarChar(m.speaker)}</div>
                     <div class="body">
                         <div class="speaker">${escapeHtml(m.speaker)}</div>
                         <div class="paragraphs">${renderParagraphs(m.content)}</div>
                     </div>
                 </div>
-            `).join('');
+            `;
+            }).join('');
             const endText = index === files.length - 1 ? '全文完' : '本章完';
             return `
                 <div class="page chapter" data-index="${index}">
@@ -518,8 +631,8 @@
             URL.revokeObjectURL(a.href);
         }
 
-        const MD_HEADER = `# 手铐\n\n> 校园青春 · 凯·默瑟 & 裘德\n\n`;
-        const TXT_HEADER = `手铐\n校园青春 · 凯·默瑟 & 裘德\n\n`;
+        const MD_HEADER = info.mdHeader;
+        const TXT_HEADER = info.txtHeader;
         const TXT_DIVIDER = '\n\n──────\n\n';
 
         // 正文中的 *动作描写* 本身就是 md 斜体语法，直接保留
@@ -548,7 +661,7 @@
             const data = await fetchChapter(currentIndex);
             if (!data.messages || data.messages.length === 0) return;
             const text = fmt.header + fmt.render(f.title, data.messages) + '\n';
-            downloadText(`手铐 ${f.title}.${fmt.ext}`, text, fmt.mime);
+            downloadText(`${info.title} ${f.title}.${fmt.ext}`, text, fmt.mime);
         }
 
         async function exportAll() {
@@ -567,7 +680,7 @@
                     }
                 }
                 const text = fmt.header + parts.join(fmt.divider) + '\n';
-                downloadText(`手铐 全文.${fmt.ext}`, text, fmt.mime);
+                downloadText(`${info.title} 全文.${fmt.ext}`, text, fmt.mime);
             } finally {
                 btn.textContent = original;
                 btn.disabled = false;
@@ -579,6 +692,7 @@
             if (e.key === 'ArrowRight') loadNext();
         });
 
+        loadArticles();
         loadFiles();
     </script>
 </body>

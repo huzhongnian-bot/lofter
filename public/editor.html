@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>改文工作台</title>
+    <style>
+        :root {
+            --paper: #fbf7ef;
+            --paper-deep: #f4eee1;
+            --ink: #4a4238;
+            --ink-light: #8a8071;
+            --line: #e6ddcc;
+            --sky: #7fb2d9;
+            --sky-soft: #eaf3fa;
+            --peach: #f2a08d;
+            --peach-soft: #fdf0ec;
+            --accent: #5b8fb5;
+            --indigo: #5b6eb5;
+            --indigo-soft: #eceffb;
+            --plum: #9b5b8f;
+            --plum-soft: #f8ecf5;
+            --sage: #6b9b7a;
+            --sage-soft: #e8f5ec;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { font-size: 16px; }
+        body {
+            font-family: "Source Han Serif SC", "Noto Serif SC", "Songti SC", "SimSun", serif;
+            background:
+                radial-gradient(circle at 15% 10%, rgba(127,178,217,0.08), transparent 40%),
+                radial-gradient(circle at 85% 90%, rgba(242,160,141,0.08), transparent 40%),
+                var(--paper);
+            color: var(--ink);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* ---------- 侧边栏（与阅读页同款笔记本风） ---------- */
+        .sidebar {
+            width: 240px;
+            background: var(--paper-deep);
+            border-right: 2px dashed var(--line);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+        .sidebar .brand {
+            padding: 26px 22px 18px;
+            border-bottom: 1px solid var(--line);
+        }
+        .brand .title {
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+        .brand .subtitle {
+            margin-top: 6px;
+            font-size: 12px;
+            color: var(--ink-light);
+            letter-spacing: 1px;
+        }
+        .brand .back {
+            margin-top: 12px;
+            font-size: 12.5px;
+        }
+        .brand .back a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px dashed var(--sky);
+            padding-bottom: 1px;
+        }
+        .brand .back a:hover { color: var(--indigo); }
+
+        .file-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px 14px 24px;
+        }
+        .file-item {
+            position: relative;
+            padding: 11px 14px 11px 34px;
+            margin-bottom: 4px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14.5px;
+            color: var(--ink);
+            transition: background 0.15s;
+            line-height: 1.4;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .file-item::before {
+            content: "";
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            border: 1.5px solid var(--sky);
+            background: transparent;
+        }
+        .file-item:hover { background: rgba(127,178,217,0.12); }
+        .file-item.active {
+            background: #fff;
+            box-shadow: 0 1px 4px rgba(74,66,56,0.1);
+            font-weight: 700;
+        }
+        .file-item.active::before { background: var(--peach); border-color: var(--peach); }
+        .file-item .badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            letter-spacing: 1px;
+            flex-shrink: 0;
+            font-weight: 400;
+        }
+        .file-item .badge.done { background: var(--sage-soft); color: var(--sage); border: 1px solid #c8e6d2; }
+        .file-item .badge.none { background: transparent; color: var(--ink-light); border: 1px dashed var(--line); }
+
+        .sidebar .tips {
+            padding: 14px 18px 20px;
+            border-top: 1px solid var(--line);
+            font-size: 12px;
+            color: var(--ink-light);
+            line-height: 1.9;
+            letter-spacing: 0.5px;
+        }
+        .sidebar .tips b { color: var(--ink); font-weight: 700; }
+
+        /* ---------- 主区域 ---------- */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        .header {
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-bottom: 1px solid var(--line);
+            background: rgba(251,247,239,0.9);
+            flex-wrap: wrap;
+        }
+        .header h1 {
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            flex-shrink: 0;
+        }
+        .save-state {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12.5px;
+            color: var(--ink-light);
+            letter-spacing: 1px;
+        }
+        .save-state .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--line);
+        }
+        .save-state.saved .dot { background: var(--sage); }
+        .save-state.saving .dot { background: var(--sky); }
+        .save-state.dirty .dot { background: var(--peach); }
+        .save-state.error .dot { background: #d3705a; }
+        .spacer { flex: 1; }
+        .toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .toolbar button, .toolbar select {
+            font-family: inherit;
+            background: #fff;
+            border: 1px solid var(--line);
+            color: var(--ink);
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.15s;
+        }
+        .toolbar button:hover:not(:disabled), .toolbar select:hover {
+            border-color: var(--sky);
+            color: var(--accent);
+        }
+        .toolbar button:disabled { opacity: 0.35; cursor: not-allowed; }
+        .toolbar button.primary {
+            background: var(--sky-soft);
+            border-color: #cce0ef;
+            color: var(--accent);
+            font-weight: 700;
+        }
+        .toolbar button.primary:hover { background: #ddecf8; }
+
+        /* ---------- 双栏工作区 ---------- */
+        .workspace {
+            flex: 1;
+            display: flex;
+            min-height: 0;
+        }
+        .pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        .pane + .pane { border-left: 2px dashed var(--line); }
+        .pane-head {
+            padding: 10px 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            letter-spacing: 2px;
+            color: var(--ink-light);
+            border-bottom: 1px solid var(--line);
+            background: rgba(244,238,225,0.55);
+        }
+        .pane-head .mark {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .pane-head .mark.orig { background: var(--sky-soft); color: var(--accent); border: 1.5px solid #cce0ef; }
+        .pane-head .mark.draft { background: var(--peach-soft); color: #d3705a; border: 1.5px solid #f6d5cb; }
+        .pane-head .count { margin-left: auto; letter-spacing: 1px; font-size: 12px; }
+
+        /* 左栏：原稿（沿用阅读页对话样式） */
+        .original {
+            flex: 1;
+            overflow-y: auto;
+            padding: 26px 22px 60px;
+            scroll-behavior: smooth;
+        }
+        .original .page { max-width: 640px; margin: 0 auto; }
+        .message { display: flex; gap: 12px; margin-bottom: 28px; }
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .message.assistant .avatar { background: var(--sky-soft); color: var(--accent); border: 1.5px solid #cce0ef; }
+        .message.user .avatar { background: var(--peach-soft); color: #d3705a; border: 1.5px solid #f6d5cb; }
+        .message.caes .avatar { background: var(--indigo-soft); color: var(--indigo); border: 1.5px solid #d0d6ef; }
+        .message.ling .avatar { background: var(--plum-soft); color: var(--plum); border: 1.5px solid #ebd3e6; }
+        .message.bai .avatar { background: var(--sage-soft); color: var(--sage); border: 1.5px solid #c8e6d2; }
+        .body { flex: 1; min-width: 0; }
+        .speaker {
+            font-size: 12.5px;
+            font-weight: 700;
+            margin-bottom: 7px;
+            letter-spacing: 1px;
+        }
+        .message.assistant .speaker { color: var(--accent); }
+        .message.user .speaker { color: #d3705a; }
+        .message.caes .speaker { color: var(--indigo); }
+        .message.ling .speaker { color: var(--plum); }
+        .message.bai .speaker { color: var(--sage); }
+        .paragraphs { font-size: 0.95rem; }
+        .paragraphs p { margin-bottom: 9px; }
+        .paragraphs p:last-child { margin-bottom: 0; }
+        p.say { line-height: 1.85; color: var(--ink); }
+        .message.assistant p.say,
+        .message.user p.say,
+        .message.caes p.say,
+        .message.ling p.say,
+        .message.bai p.say {
+            background: #fff;
+            padding: 9px 14px;
+            border-radius: 0 10px 10px 0;
+            box-shadow: 0 1px 3px rgba(74,66,56,0.06);
+        }
+        .message.assistant p.say { border-left: 3px solid var(--sky); }
+        .message.user p.say { border-left: 3px solid var(--peach); }
+        .message.caes p.say { border-left: 3px solid var(--indigo); }
+        .message.ling p.say { border-left: 3px solid var(--plum); }
+        .message.bai p.say { border-left: 3px solid var(--sage); }
+        p.act {
+            font-size: 0.9em;
+            line-height: 1.8;
+            color: var(--ink-light);
+            padding: 2px 4px;
+        }
+        span.act-inline { color: var(--ink-light); font-size: 0.92em; }
+        .empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 50vh;
+            color: var(--ink-light);
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        /* 右栏：改稿编辑器（稿纸） */
+        .editor-wrap {
+            flex: 1;
+            display: flex;
+            min-height: 0;
+            padding: 18px 20px 20px;
+        }
+        #editor {
+            flex: 1;
+            width: 100%;
+            resize: none;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background:
+                repeating-linear-gradient(
+                    transparent,
+                    transparent 35px,
+                    rgba(230,221,204,0.55) 35px,
+                    rgba(230,221,204,0.55) 36px
+                ),
+                #fffdf8;
+            box-shadow: 0 1px 4px rgba(74,66,56,0.08) inset;
+            padding: 20px 24px;
+            font-family: inherit;
+            font-size: 1rem;
+            line-height: 36px;
+            color: var(--ink);
+            letter-spacing: 0.3px;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+        #editor:focus { border-color: var(--sky); }
+        #editor::placeholder { color: var(--ink-light); opacity: 0.6; }
+
+        /* 滚动条 */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #d8cdb6; }
+
+        @media (max-width: 900px) {
+            .sidebar { display: none; }
+            .workspace { flex-direction: column; }
+            .pane + .pane { border-left: none; border-top: 2px dashed var(--line); }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="brand">
+            <div class="title" id="brandTitle">改文工作台</div>
+            <div class="subtitle" id="brandSubtitle">— 原稿对照 · 逐章重写 —</div>
+            <div class="back"><a id="backLink" href="/">← 返回阅读</a></div>
+        </div>
+        <div class="file-list" id="fileList"></div>
+        <div class="tips">
+            <b>Ctrl+S</b> 手动保存<br>
+            停笔 1.5 秒自动存稿<br>
+            草稿保存于 <b>revised/</b> 目录
+        </div>
+    </div>
+    <div class="main">
+        <div class="header">
+            <h1 id="chapterTitle">请选择章节</h1>
+            <div class="save-state" id="saveState"><span class="dot"></span><span id="saveText">尚未开始</span></div>
+            <div class="spacer"></div>
+            <div class="toolbar">
+                <select id="articleSelect" title="切换文章" onchange="switchArticle(this.value)"></select>
+                <button onclick="importOriginal()" title="将原稿文本填入编辑器作为改写底稿">导入原稿底稿</button>
+                <button onclick="exportDraft()" title="下载当前章节改稿 Markdown">导出本章改稿</button>
+                <button class="primary" onclick="saveDraft(true)" title="立即保存（Ctrl+S）">保存</button>
+                <button id="prevBtn" onclick="nav(-1)">← 上一章</button>
+                <button id="nextBtn" onclick="nav(1)">下一章 →</button>
+            </div>
+        </div>
+        <div class="workspace">
+            <div class="pane">
+                <div class="pane-head">
+                    <span class="mark orig">原</span>原稿存档
+                    <span class="count" id="origCount"></span>
+                </div>
+                <div class="original" id="original">
+                    <div class="empty">在左侧选择要改的章节 ✎</div>
+                </div>
+            </div>
+            <div class="pane">
+                <div class="pane-head">
+                    <span class="mark draft">改</span>改稿（小说体）
+                    <span class="count" id="draftCount"></span>
+                </div>
+                <div class="editor-wrap">
+                    <textarea id="editor" placeholder="在这里重写本章——&#10;&#10;建议：统一成零的单一视角；卡厄斯的内心戏转成零的观察与误读；顺手清掉本章的逻辑债。" disabled></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(location.search);
+        const article = urlParams.get('article') || 'nte';
+
+        const ARTICLE_INFO = {
+            cuff: {
+                title: '手铐',
+                roleClassMap: { '凯·默瑟': 'assistant', '裘德': 'user' },
+                avatarMap: { '裘德': '裘', '凯·默瑟': '凯' }
+            },
+            nte: {
+                title: 'Nowhere to Everywhere',
+                roleClassMap: { '卡厄斯': 'caes', '零': 'ling', '白藏': 'bai' },
+                avatarMap: { '卡厄斯': '卡', '零': '零', '白藏': '白' }
+            }
+        };
+        const info = ARTICLE_INFO[article] || { title: article, roleClassMap: {}, avatarMap: {} };
+
+        document.title = `${info.title} · 改文工作台`;
+        document.getElementById('brandTitle').textContent = '改文工作台';
+        document.getElementById('brandSubtitle').textContent = `— ${info.title} —`;
+        document.getElementById('backLink').href = `/?article=${encodeURIComponent(article)}`;
+
+        let files = [];
+        let drafts = {};          // name -> { chars }
+        let currentIndex = -1;
+        let currentMessages = [];
+        let dirty = false;
+        let saveTimer = null;
+        let saving = false;
+
+        const fileListEl = document.getElementById('fileList');
+        const originalEl = document.getElementById('original');
+        const editorEl = document.getElementById('editor');
+        const titleEl = document.getElementById('chapterTitle');
+        const saveStateEl = document.getElementById('saveState');
+        const saveTextEl = document.getElementById('saveText');
+        const origCountEl = document.getElementById('origCount');
+        const draftCountEl = document.getElementById('draftCount');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function escapeHtml(text) {
+            return text.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+        }
+
+        function draftName(index) {
+            return files[index].name.replace(/\.txt$/, '') + '.md';
+        }
+
+        function charCount(text) {
+            return text.replace(/\s/g, '').length;
+        }
+
+        function setSaveState(state, text) {
+            saveStateEl.className = 'save-state ' + state;
+            saveTextEl.textContent = text;
+        }
+
+        function renderParagraphs(content) {
+            const paras = content.split(/\n{2,}/).map(p => p.trim()).filter(Boolean);
+            return paras.map(p => {
+                const isAct = /^\*[^*]*\*$/.test(p);
+                if (isAct) {
+                    const text = escapeHtml(p.replace(/^\*|\*$/g, '').trim()).replace(/\n/g, '<br>');
+                    return `<p class="act">${text}</p>`;
+                }
+                const text = escapeHtml(p)
+                    .replace(/\*([^*]+)\*/g, '<span class="act-inline">$1</span>')
+                    .replace(/\n/g, '<br>');
+                return `<p class="say">${text}</p>`;
+            }).join('');
+        }
+
+        function renderFileList() {
+            fileListEl.innerHTML = files.map((f, i) => {
+                const d = drafts[draftName(i)];
+                const badge = d && d.chars > 0
+                    ? `<span class="badge done">${d.chars}字</span>`
+                    : `<span class="badge none">未改</span>`;
+                return `<div class="file-item ${i === currentIndex ? 'active' : ''}" data-index="${i}" onclick="loadChapter(${i})">
+                    <span>${f.title}</span>${badge}
+                </div>`;
+            }).join('');
+        }
+
+        async function loadArticles() {
+            try {
+                const res = await fetch('/api/articles');
+                const list = await res.json();
+                const select = document.getElementById('articleSelect');
+                select.innerHTML = list.map(a =>
+                    `<option value="${escapeHtml(a)}" ${a === article ? 'selected' : ''}>${escapeHtml(a)}</option>`
+                ).join('');
+            } catch (e) { /* 单文章场景可忽略 */ }
+        }
+
+        function switchArticle(next) {
+            if (next === article) return;
+            location.search = `?article=${encodeURIComponent(next)}`;
+        }
+
+        async function loadDraftList() {
+            try {
+                const res = await fetch(`/api/${encodeURIComponent(article)}/drafts`);
+                const list = await res.json();
+                drafts = {};
+                if (Array.isArray(list)) list.forEach(d => { drafts[d.name] = d; });
+            } catch (e) { drafts = {}; }
+        }
+
+        async function loadFiles() {
+            const res = await fetch(`/api/${encodeURIComponent(article)}/files`);
+            if (!res.ok) {
+                originalEl.innerHTML = `<div class="empty">无法加载文章“${escapeHtml(article)}”</div>`;
+                return;
+            }
+            files = await res.json();
+            await loadDraftList();
+            renderFileList();
+            if (files.length > 0) loadChapter(0);
+        }
+
+        async function loadChapter(index) {
+            if (index < 0 || index >= files.length) return;
+            if (dirty) await saveDraft();   // 切章前把当前稿子落盘
+
+            currentIndex = index;
+            titleEl.textContent = files[index].title;
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = index === files.length - 1;
+            renderFileList();
+
+            // 左栏原稿
+            originalEl.innerHTML = '<div class="empty">翻页中…</div>';
+            const res = await fetch(`/api/${encodeURIComponent(article)}/file/` + encodeURIComponent(files[index].name));
+            const data = await res.json();
+            currentMessages = data.messages || [];
+            if (currentMessages.length === 0) {
+                originalEl.innerHTML = '<div class="empty">该章节没有内容</div>';
+                origCountEl.textContent = '';
+            } else {
+                const body = currentMessages.map(m => {
+                    const roleClass = info.roleClassMap[m.speaker] || 'assistant';
+                    const avatar = info.avatarMap[m.speaker] || m.speaker.charAt(0);
+                    return `
+                    <div class="message ${roleClass}">
+                        <div class="avatar">${escapeHtml(avatar)}</div>
+                        <div class="body">
+                            <div class="speaker">${escapeHtml(m.speaker)}</div>
+                            <div class="paragraphs">${renderParagraphs(m.content)}</div>
+                        </div>
+                    </div>`;
+                }).join('');
+                originalEl.innerHTML = `<div class="page">${body}</div>`;
+                originalEl.scrollTop = 0;
+                const total = currentMessages.reduce((s, m) => s + charCount(m.content), 0);
+                origCountEl.textContent = `${total} 字`;
+            }
+
+            // 右栏草稿
+            editorEl.disabled = false;
+            editorEl.value = '';
+            setSaveState('', '读取草稿…');
+            try {
+                const dres = await fetch(`/api/${encodeURIComponent(article)}/draft/` + encodeURIComponent(draftName(index)));
+                const draft = await dres.json();
+                editorEl.value = draft.content || '';
+                dirty = false;
+                setSaveState('saved', draft.exists ? '已载入草稿' : '新草稿');
+            } catch (e) {
+                setSaveState('error', '草稿读取失败');
+            }
+            updateDraftCount();
+        }
+
+        function updateDraftCount() {
+            draftCountEl.textContent = `${charCount(editorEl.value)} 字`;
+        }
+
+        async function saveDraft(manual) {
+            if (currentIndex < 0 || saving) return;
+            if (!dirty && !manual) return;
+            saving = true;
+            setSaveState('saving', '保存中…');
+            const index = currentIndex;
+            const content = editorEl.value;
+            try {
+                const res = await fetch(`/api/${encodeURIComponent(article)}/draft/` + encodeURIComponent(draftName(index)), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: content
+                });
+                const result = await res.json();
+                if (result.ok) {
+                    dirty = false;
+                    drafts[draftName(index)] = { name: draftName(index), chars: result.chars };
+                    renderFileList();
+                    const now = new Date();
+                    const hh = String(now.getHours()).padStart(2, '0');
+                    const mm = String(now.getMinutes()).padStart(2, '0');
+                    setSaveState('saved', `已保存 ${hh}:${mm}`);
+                } else {
+                    setSaveState('error', '保存失败');
+                }
+            } catch (e) {
+                setSaveState('error', '保存失败');
+            }
+            saving = false;
+        }
+
+        function importOriginal() {
+            if (currentIndex < 0 || currentMessages.length === 0) return;
+            if (editorEl.value.trim() &&
+                !confirm('编辑器里已有改稿内容，导入原稿会追加到末尾，继续吗？')) return;
+            const text = currentMessages
+                .map(m => `【${m.speaker}】\n${m.content}`)
+                .join('\n\n');
+            editorEl.value = editorEl.value.trim()
+                ? editorEl.value.replace(/\s+$/, '') + '\n\n────── 原稿 ──────\n\n' + text
+                : text;
+            markDirty();
+            editorEl.focus();
+        }
+
+        function exportDraft() {
+            if (currentIndex < 0 || !editorEl.value.trim()) return;
+            const f = files[currentIndex];
+            const text = `# ${info.title} ${f.title}（改稿）\n\n` + editorEl.value + '\n';
+            const blob = new Blob(['\ufeff' + text], { type: 'text/markdown;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `${info.title} ${f.title} 改稿.md`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        function markDirty() {
+            dirty = true;
+            setSaveState('dirty', '未保存');
+            updateDraftCount();
+            clearTimeout(saveTimer);
+            saveTimer = setTimeout(() => saveDraft(), 1500);
+        }
+
+        function nav(delta) { loadChapter(currentIndex + delta); }
+
+        editorEl.addEventListener('input', markDirty);
+
+        document.addEventListener('keydown', e => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+                e.preventDefault();
+                saveDraft(true);
+            }
+        });
+
+        // 离开页面前若有未保存内容给出提示
+        window.addEventListener('beforeunload', e => {
+            if (dirty) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        loadArticles();
+        loadFiles();
+    </script>
+</body>
+</html>
