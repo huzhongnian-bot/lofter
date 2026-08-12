@@ -90,8 +90,10 @@ function processFile(srcPath, roleNames, characterMap) {
     const thinkingLines = [];
 
     for (const msg of messages) {
-        const speaker = resolveSpeaker(msg, roleNames, characterMap);
         const { text, reasoning } = splitContent(msg);
+        // 跳过平台系统旁白（如 [NARRATION: 灵可 has left the scene]）
+        if (msg.role === 'system' || /^\[NARRATION:/.test(text)) continue;
+        const speaker = resolveSpeaker(msg, roleNames, characterMap);
         if (text) dialogueLines.push(`【${speaker}】\n${text}`);
         if (reasoning) {
             thinkingLines.push(`## ${speaker} 的思考`);
@@ -105,7 +107,7 @@ function processFile(srcPath, roleNames, characterMap) {
 }
 
 function resolveSpeaker(msg, roleNames, characterMap) {
-    // assistant 消息可能由不同角色（如卡厄斯、白藏）发出，优先按 characterId 判断
+    // assistant 消息可能由不同角色（如卡厄斯、白藏、灵可）发出，优先按 characterId 判断
     if (msg.role === 'assistant' && msg.characterId && characterMap[msg.characterId]) {
         return characterMap[msg.characterId];
     }
@@ -127,7 +129,8 @@ function main() {
     // 根据 characterId 识别 assistant 消息的实际发言角色（支持同一对话中切换角色）
     const characterMap = {
         'da947050-1a87-4b95-b562-62ffc5cf9f78': options.assistant || '卡厄斯',
-        '8c5470ae-1a9f-4ea1-b19f-11efc6e9581b': '白藏'
+        '8c5470ae-1a9f-4ea1-b19f-11efc6e9581b': '白藏',
+        '70138c4e-c01b-489a-94ae-49825aac61ad': '灵可'
     };
 
     const srcDir = path.join(__dirname, '..', 'articles', article, 'source');
