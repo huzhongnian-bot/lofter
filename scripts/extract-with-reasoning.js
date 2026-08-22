@@ -4,6 +4,7 @@
  * 示例：
  *   node scripts/extract-with-reasoning.js nte --assistant=卡厄斯 --user=零
  *   node scripts/extract-with-reasoning.js nte --assistant=卡厄斯 --user=零 --file=8.json
+ *   node scripts/extract-with-reasoning.js nte --file=all.json（从合并后的 all.json 导出全文）
  * 输出：
  *   articles/<article>/extracted/<num>.txt
  *   articles/<article>/thinking.md
@@ -26,6 +27,11 @@ function collectMessages(data) {
     const items = Array.isArray(data) ? data : [data];
     const messages = [];
     for (const item of items) {
+        // 兼容 all.json 等已合并的扁平消息数组
+        if (item && item.role) {
+            messages.push(item);
+            continue;
+        }
         const list = item?.result?.data?.json;
         if (!Array.isArray(list)) continue;
         messages.push(...list);

@@ -4,18 +4,34 @@
  * - assistant 的 content 为 [{type,text}] 数组，user 的 content 为纯字符串（兜底读 parts）
  * - 同一文件内按 id 去重、createdAt 时间排序
  * - 跳过 14.json（仅含会话摘要）
- * - 识别 4/6/5/7.json 为重复导出文件
  */
 const fs = require('fs');
 const path = require('path');
 
+// 默认角色名（cuff）
 const ROLE_NAMES = {
     assistant: '凯·默瑟',
     user: '裘德'
 };
 
-// 已知重复导出的文件名（不含扩展名）
-const DUPLICATED_IDS = new Set(['4', '5', '6', '7']);
+// 各文章的角色名覆盖（依据 source JSON 中 reasoning 的自述确认）
+const ARTICLE_ROLE_NAMES = {
+    nte: { assistant: '卡厄斯', user: '零' },
+    kur: { assistant: '阿贝尔', user: '凉' }
+};
+
+// 同一对话中 assistant 由多个 characterId 扮演时，按 characterId 区分发言角色
+const ARTICLE_CHARACTER_NAMES = {
+    nte: {
+        'da947050-1a87-4b95-b562-62ffc5cf9f78': '卡厄斯',
+        '8c5470ae-1a9f-4ea1-b19f-11efc6e9581b': '白藏',
+        '70138c4e-c01b-489a-94ae-49825aac61ad': '灵可'
+    },
+    kur: {
+        '01f2b0b5-19a9-42d7-a489-8fee7911a10b': '阿贝尔',
+        'c2cb2063-5766-413f-ab9a-4547efadfe54': '丽希娅'
+    }
+};
 
 // 从消息对象中提取纯文本
 function getMessageText(msg) {
@@ -63,17 +79,18 @@ function listSourceFiles(srcDir) {
         .map(f => ({ fullPath: path.join(srcDir, f), name: f, num: parseInt(f, 10) }))
         .filter(item => {
             const base = path.basename(item.name, '.json');
-            // 跳过非数字命名、14.json 摘要以及已知重复导出
+            // 跳过非数字命名以及 14.json 摘要
             if (Number.isNaN(item.num)) return false;
             if (base === '14') return false;
-            if (DUPLICATED_IDS.has(base)) return false;
             return true;
         })
         .sort((a, b) => a.num - b.num);
 }
 
 // 读取并解析单个 JSON 文件，返回 { name, num, messages } 或 null
-function parseSourceFile(item) {
+function parseSourceFile(item, roleNames, characterNames) {
+    const roles = roleNames || ROLE_NAMES;
+    const characters = characterNames || {};
     const raw = fs.readFileSync(item.fullPath, 'utf8').trim();
     if (!raw) {
         console.log(`跳过空文件: ${item.name}`);
@@ -96,21 +113,28 @@ function parseSourceFile(item) {
         num: item.num,
         messages: messages.map(msg => ({
             role: msg.role,
-            speaker: ROLE_NAMES[msg.role] || msg.role,
+            // assistant 消息可能由不同角色发出，优先按 characterId 判断
+            speaker: (msg.role === 'assistant' && characters[msg.characterId])
+                ? characters[msg.characterId]
+                : (roles[msg.role] || msg.role),
             content: getMessageText(msg)
         })).filter(m => m.content)
     };
 }
 
-// 读取整个文章的所有有效章节
+// 读取整个文章的所有有效章节（按目录名套用对应角色名）
 function readArticleChapters(srcDir) {
+    const article = path.basename(path.dirname(srcDir));
+    const roleNames = ARTICLE_ROLE_NAMES[article] || ROLE_NAMES;
+    const characterNames = ARTICLE_CHARACTER_NAMES[article];
     const items = listSourceFiles(srcDir);
-    return items.map(parseSourceFile).filter(Boolean);
+    return items.map(item => parseSourceFile(item, roleNames, characterNames)).filter(Boolean);
 }
 
 module.exports = {
     ROLE_NAMES,
-    DUPLICATED_IDS,
+    ARTICLE_ROLE_NAMES,
+    ARTICLE_CHARACTER_NAMES,
     getMessageText,
     collectMessages,
     listSourceFiles,

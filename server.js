@@ -102,6 +102,9 @@ function parseDialogue(text) {
         if (!content) continue;
         messages.push({ speaker, content });
     }
+    if (messages.length === 0) {
+        return [{ type: 'prose', speaker: '', content: text }];
+    }
     return messages;
 }
 
