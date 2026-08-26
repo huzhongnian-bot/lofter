@@ -1,0 +1,495 @@
+[
+  {
+    "id": "ea58d75a-aa73-407c-be71-7251c2250ae6",
+    "scriptName": "库尔之河·文风1-现代词清理",
+    "findRegex": "/\\bOK\\b/gi",
+    "replaceString": "好",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "30758706-7515-4937-9c99-95a9db7aaeb0",
+    "scriptName": "库尔之河·文风1-现代词清理",
+    "findRegex": "/没问题/g",
+    "replaceString": "不打紧",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "ab6128e3-06f7-4999-978b-eeaba96e2e0d",
+    "scriptName": "库尔之河·文风1-现代词清理",
+    "findRegex": "/搞定/g",
+    "replaceString": "办妥",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "5c884350-6fa2-412f-9adc-af8a40fd6476",
+    "scriptName": "库尔之河·文风1-现代词清理",
+    "findRegex": "/靠谱/g",
+    "replaceString": "可靠",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "e6811c45-0c4f-44f0-8e1f-63ad95a60f69",
+    "scriptName": "库尔之河·文风1-现代词清理",
+    "findRegex": "/立马/g",
+    "replaceString": "这就",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "60d149e2-1d75-446b-ab0e-facdb74f13d2",
+    "scriptName": "库尔之河·文风1-现代词清理",
+    "findRegex": "/分分钟/g",
+    "replaceString": "眨眼工夫",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "2ad3bf3f-6e70-4fad-9a1f-6b3ff3db0a14",
+    "scriptName": "库尔之河·文风1-现代词清理",
+    "findRegex": "/上班/g",
+    "replaceString": "当值",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "ddf7ae13-9e9f-4503-84b9-67a665e36d8f",
+    "scriptName": "库尔之河·文风1-现代词清理",
+    "findRegex": "/打卡/g",
+    "replaceString": "点到",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "b6059502-7454-43ae-9571-ee5ef39fc435",
+    "scriptName": "库尔之河·文风1-现代词清理",
+    "findRegex": "/吐槽/g",
+    "replaceString": "数落",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "726de8a3-7e28-49de-87ca-70b4ee06afb3",
+    "scriptName": "库尔之河·文风1-现代词清理",
+    "findRegex": "/信息/g",
+    "replaceString": "消息",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "8fbdc93e-02ce-428f-b64e-04f1813d3b5b",
+    "scriptName": "库尔之河·文风1-现代词清理",
+    "findRegex": "/哈喽|嗨(?=[，！!])/g",
+    "replaceString": "喂",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "4d2e1e84-ecc9-4f53-b7a6-674dceea82eb",
+    "scriptName": "库尔之河·文风2-修仙武侠腔",
+    "findRegex": "/灵力/g",
+    "replaceString": "魔力",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "bd886402-a9b9-4f3c-b29a-7bb8057ae121",
+    "scriptName": "库尔之河·文风2-修仙武侠腔",
+    "findRegex": "/修为/g",
+    "replaceString": "法力",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "e5959c76-7bec-4f6b-a33e-f90b55d9ea8b",
+    "scriptName": "库尔之河·文风2-修仙武侠腔",
+    "findRegex": "/真气|真元/g",
+    "replaceString": "魔力",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "0a30bb0f-59e2-419b-ac8a-2730d46fdeae",
+    "scriptName": "库尔之河·文风2-修仙武侠腔",
+    "findRegex": "/道友/g",
+    "replaceString": "朋友",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "1cd06420-d53a-4c3d-a700-2f3a5862b4d3",
+    "scriptName": "库尔之河·文风2-修仙武侠腔",
+    "findRegex": "/本座|本尊|贫道/g",
+    "replaceString": "我",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "74ed7f65-033a-4a52-b757-f726ab0f2de5",
+    "scriptName": "库尔之河·文风2-修仙武侠腔",
+    "findRegex": "/在下/g",
+    "replaceString": "我",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "b0468ffb-ca13-49d6-b787-466af3b30ddb",
+    "scriptName": "库尔之河·文风2-修仙武侠腔",
+    "findRegex": "/公子/g",
+    "replaceString": "先生",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "77d20ae2-41bc-4dfb-8c66-f76a34016ec6",
+    "scriptName": "库尔之河·文风2-修仙武侠腔",
+    "findRegex": "/姑娘/g",
+    "replaceString": "小姐",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "c8072ad0-46f3-4336-985d-512ffa66a821",
+    "scriptName": "库尔之河·文风3-日式腔清理",
+    "findRegex": "/(^|[，。！？\\s])呐(?=[，。！？\\s])/gm",
+    "replaceString": "$1",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "b74fed2a-c468-4f0f-a5be-d223d4a3f705",
+    "scriptName": "库尔之河·文风3-日式腔清理",
+    "findRegex": "/的说(?=[。！？]|$)/gm",
+    "replaceString": "",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "34a31060-bbaf-47ba-888f-35b7d46264da",
+    "scriptName": "库尔之河·文风3-日式腔清理",
+    "findRegex": "/(?<=[\\u4e00-\\u9fff])酱(?=[，。！？、\\s]|$)/gm",
+    "replaceString": "",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "8c10bfd6-3fe3-469b-b26d-4364400f5d50",
+    "scriptName": "库尔之河·文风3-日式腔清理",
+    "findRegex": "/(?<=[\\u4e00-\\u9fff])桑(?=[，。！？、\\s]|$)/gm",
+    "replaceString": "",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "e7789443-54d3-4ea2-97af-ce6998ad766f",
+    "scriptName": "库尔之河·文风3-日式腔清理",
+    "findRegex": "/(?<=[\\u4e00-\\u9fff])君(?=[，。！？、\\s]|$)/gm",
+    "replaceString": "先生",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "6ee10e3b-81a5-4268-827c-52926c8b491a",
+    "scriptName": "库尔之河·文风3-日式腔清理",
+    "findRegex": "/前辈/g",
+    "replaceString": "先生",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "077f442e-4f8f-4969-a64f-1868c8cc0d12",
+    "scriptName": "库尔之河·文风4-宗教违和",
+    "findRegex": "/上帝|耶稣|基督/g",
+    "replaceString": "诸神",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "8fad1535-6cb7-4acd-b80b-3c7da430b6e5",
+    "scriptName": "库尔之河·文风4-宗教违和",
+    "findRegex": "/老天爷/g",
+    "replaceString": "诸神在上",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "c4cd7bd0-3108-40dd-9d6b-b2f00390ffd8",
+    "scriptName": "库尔之河·文风4-宗教违和",
+    "findRegex": "/我的天(?:哪|呐)?/g",
+    "replaceString": "诸神在上",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  },
+  {
+    "id": "00717fe8-b408-42ed-b436-4c520c001085",
+    "scriptName": "库尔之河·文风4-宗教违和",
+    "findRegex": "/菩萨|佛祖/g",
+    "replaceString": "诸神",
+    "trimStrings": [],
+    "placement": [
+      2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+  }
+]
