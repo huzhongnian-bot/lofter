@@ -12,6 +12,12 @@ const ARTICLE = process.argv[2] || 'cuff';
 const SRC_DIR = path.join(__dirname, 'articles', ARTICLE, 'source');
 const OUT_DIR = path.join(__dirname, 'articles', ARTICLE, 'extracted');
 
+// 输出编号偏移：kur 的 7.txt 被切分出 8.txt（第二世开篇），
+// 故 source 编号 >= 8 的章节输出时 +1（8.json -> 9.txt），避免覆盖切分产物。
+const ARTICLE_NUM_OFFSET = {
+    kur: { from: 8, shift: 1 }
+};
+
 function main() {
     if (!fs.existsSync(SRC_DIR)) {
         console.error(`源目录不存在：${SRC_DIR}`);
@@ -29,7 +35,9 @@ function main() {
     const allParts = [];
     for (const chapter of chapters) {
         const lines = chapter.messages.map(m => `【${m.speaker}】\n${m.content}`);
-        const outName = chapter.num + '.txt';
+        const offset = ARTICLE_NUM_OFFSET[ARTICLE];
+        const outNum = offset && chapter.num >= offset.from ? chapter.num + offset.shift : chapter.num;
+        const outName = outNum + '.txt';
         const content = lines.join('\n\n' + '─'.repeat(40) + '\n\n');
         fs.writeFileSync(path.join(OUT_DIR, outName), content, 'utf8');
         allParts.push(`═══════════ ${chapter.name} ═══════════\n\n${content}`);

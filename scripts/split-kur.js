@@ -58,6 +58,17 @@ function main() {
 
     console.log(`7.txt：第一世部分 ${part1.replace(/\s/g, '').length} 字（含风暴与「再来一世」终幕）`);
     console.log(`8.txt：第二世部分 ${part2.replace(/\s/g, '').length} 字（海滩重逢开篇）`);
+
+    // 9.txt 起的后续第二世章节（source 编号偏移 +1 的产物）补第二世书头
+    for (const f of fs.readdirSync(dir)) {
+        if (!/^\d+\.txt$/.test(f)) continue;
+        const n = parseInt(f, 10);
+        if (n < 9) continue;
+        const p = path.join(dir, f);
+        fs.writeFileSync(p, withHeader(fs.readFileSync(p, 'utf8'), SECOND_HEADER), 'utf8');
+        console.log(`${f}：已加「第二世」书头`);
+    }
+
     console.log('切分完成。all.txt 保留为未切分的原始合并备份。');
 }
 
